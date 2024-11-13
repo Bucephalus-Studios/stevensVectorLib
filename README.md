@@ -7,7 +7,7 @@ Currently posted a working, non-full release version here. Eventually, full vers
 You can use this map library with the Beldum Package Manager:
 
 ## Install
-Import "stevensVectorLib.cpp" into your own project
+Import "stevensVectorLib.hpp" into your own project
 
 or
 
