@@ -11,7 +11,7 @@ Import "stevensVectorLib.cpp" into your own project
 
 or
 
-## Beldum Package Manager: https://github.com/Nord-Tech-Systems-LLC/beldum_package_manager
+### Beldum Package Manager: https://github.com/Nord-Tech-Systems-LLC/beldum_package_manager
 ```
 mkdir new_project
 cd new_project
