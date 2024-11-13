@@ -4,7 +4,7 @@ A C++ std::vector library that is simple and powerful
 Currently posted a working, non-full release version here. Eventually, full version with tests, benchmarks, documentation, and more will be posted.
 
 # Simple installation and usage:
-You can use this map library with the Beldum Package Manager:
+You can use this vector library with the Beldum Package Manager:
 
 ## Install
 Import "stevensVectorLib.hpp" into your own project
