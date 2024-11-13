@@ -7,6 +7,11 @@ Currently posted a working, non-full release version here. Eventually, full vers
 You can use this map library with the Beldum Package Manager:
 
 ## Install
+Import "stevensVectorLib.cpp" into your own project
+
+or
+
+## Beldum Package Manager: https://github.com/Nord-Tech-Systems-LLC/beldum_package_manager
 ```
 mkdir new_project
 cd new_project
@@ -16,7 +21,7 @@ beldum install stevensVectorLib
 
 ## Usage
 `src/main.cpp`
-```
+```cpp
 #include <vector>
 #include <string>
 #include "stevensVectorLib.hpp"
