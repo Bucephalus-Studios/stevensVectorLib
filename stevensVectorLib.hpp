@@ -15,8 +15,8 @@ namespace stevensVectorLib
      * @return True if vec contains element. False otherwise.
      */
     template<typename T>
-    bool contains(  std::vector<T> vec,
-                    T element   )
+    bool contains(  const std::vector<T> & vec,
+                    const T & element   )
     {
         if(std::find(vec.begin(), vec.end(), element) != vec.end())
         {
@@ -38,7 +38,7 @@ namespace stevensVectorLib
      *  std::vector<T> - The modified vector vec with all instances of eraseTarget erased from it.
     */
     template<typename T>
-    std::vector<T> eraseAllOf(    std::vector<T> vec,
+    std::vector<T> eraseAllOf(  std::vector<T> vec,
                                 T eraseTarget)
     {
         vec.erase(std::remove(vec.begin(), vec.end(), eraseTarget), vec.end());
@@ -116,6 +116,30 @@ namespace stevensVectorLib
                 [](const std::string& str) { return std::stoll(str); });
 
         return outputVec;
+    }
+
+
+    /**
+     * @brief Returns the first index at which the element occurs in a given vector. If it is not found
+     *        in this vector, return std::numeric_limits<size_t>::max().
+     * 
+     * @credit  https://stackoverflow.com/a/1425683
+     *          https://thispointer.com/c-how-to-find-an-element-in-vector-and-get-its-index/
+     * 
+     * @param vec The vector we are trying to find the index of an element within it.
+     * @param element The element we are trying to find the index of in vec.
+     */
+    template<typename T> 
+    std::size_t findElementIndex(   const std::vector<T> & vec,
+                                    const T element )
+    {
+        auto it = std::find(vec.begin(), vec.end(), element);
+        
+        if(it != vec.end())
+        {
+            return std::distance(vec.begin(), it);
+        }
+        return std::numeric_limits<size_t>::max();
     }
 
 
@@ -298,10 +322,10 @@ namespace stevensVectorLib
         }
 
         //Iterate through vec, keeping track of the index of the string that has the greatest length
-        unsigned long long int indexOfLongestString = 0;
+        size_t indexOfLongestString = 0;
         if(searchFrom == "beginning")
         {
-            for(unsigned long long int i = 0; i < vec.size(); i++)
+            for(size_t i = 0; i < vec.size(); i++)
             {
                 if(vec[i].length() > vec[indexOfLongestString].length())
                 {
@@ -311,7 +335,7 @@ namespace stevensVectorLib
         }
         else
         {
-            for(unsigned long long int i = (vec.size() - 1); i >= 0; i--)
+            for(size_t i = (vec.size() - 1); i >= 0; i--)
             {
                 if(vec[i].length() > vec[indexOfLongestString].length())
                 {
@@ -429,4 +453,35 @@ namespace stevensVectorLib
         }
         return vec_a;
     }
+
+
+    /**
+     * @brief Given a vector, return the first element in the vector and erase it from the vector.
+     * 
+     * @param vec The vector which we want to pop the first element from.
+     * 
+     * @return The first element of vec, which we have just popped from it.
+     */
+    template<typename T>
+    T popFront(  std::vector<T> & vec )
+    {
+        //If the vector is empty, throw an error
+        if(vec.empty())
+        {
+            throw std::invalid_argument("stevensVectorLib::popFront() error: Given vec parameter is empty");
+        }
+
+        //Get the first element
+        T firstElement = vec[0];
+        //Erase the first element
+        vec.erase(vec.begin());
+        return firstElement;
+    }
+
+
+    // /**
+    //  * @brief Given a vector 
+    //  */
+    // <template
+    // std::vector< std::pair<F,S> >
 }
