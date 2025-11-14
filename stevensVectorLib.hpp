@@ -1,390 +1,334 @@
-#include<algorithm>
-#include<numeric>
-#include<iostream>
-#include<vector>
+#ifndef STEVENS_VECTOR_LIB_HPP
+#define STEVENS_VECTOR_LIB_HPP
+
+#include <algorithm>
+#include <numeric>
+#include <stdexcept>
+#include <vector>
+#include <string>
+#include <limits>
+#include <unordered_set>
+#include <cstdlib>
 
 namespace stevensVectorLib
 {
-    /*** Methods ***/
-
     /**
-     * @brief Check to see if a vector contains a certain element.
-     * 
-     * @param vec The vector we are checking to see if it contains a certain element.
-     * @param element The element we are checking to see if it is in vec.
-     * 
-     * @return True if vec contains element. False otherwise.
+     * @brief Check if a vector contains a specific element.
+     *
+     * @param vec The vector to search.
+     * @param element The element to find.
+     * @return true if vec contains element, false otherwise.
      */
     template<typename T>
-    bool contains(  const std::vector<T> & vec,
-                    const T & element   )
+    bool contains(const std::vector<T>& vec, const T& element)
     {
-        if(std::find(vec.begin(), vec.end(), element) != vec.end())
-        {
-            return true;
-        }
-        return false;
+        return std::find(vec.begin(), vec.end(), element) != vec.end();
     }
 
 
     /**
-     * Given a vector of objects T vec, and an eraseTarget of type T, erase all instances of the eraseTarget 
-     * from vec, then return vec.
-     * 
-     * Parameters:
-     *  std::vector<T> vec - The vector we are erasing all of an eraseTarget from.
-     *  T eraseTarget - The thing we are erasing all occurrences of in vec.
-     * 
-     * Returns:
-     *  std::vector<T> - The modified vector vec with all instances of eraseTarget erased from it.
-    */
+     * @brief Erase all instances of a target element from a vector.
+     *
+     * @param vec The vector to modify.
+     * @param eraseTarget The element to erase from vec.
+     */
     template<typename T>
-    std::vector<T> eraseAllOf(  std::vector<T> vec,
-                                T eraseTarget)
+    void eraseAllOf(std::vector<T>& vec, const T& eraseTarget)
     {
         vec.erase(std::remove(vec.begin(), vec.end(), eraseTarget), vec.end());
-        return vec;
     }
 
 
     /**
-     * Sum all of the elements in the vector and returns the result.
-     * 
-     * Parameters:
-     *  std::vector<T> vec - A vector of elements of type T that can be added together.
-     *  T init - The initial value we will begin adding to for our sum.
-     * 
-     * Returns:
-     *  T - Object of type T of all of the vector elements summed together.
-    */
-    template<typename T>
-    T sumAll(   std::vector<T> vec,
-                T init  )
-    {
-        return accumulate(vec.begin(), vec.end(), init);
-    }
-
-
-    /**
-     * Multiply all elements in the vector and return the result.
-     * 
-     * Parameters:
-     *  std::vector<T> vec - A vector of elements of type T that can be multiplied together.
-     *  T init - A number we will multiply our product by. Default is 1.
-     * 
-     * Returns:
-     *  T - Object of type T of the product of all vector elements multiplied together.
-    */
-    template<typename T>
-    T multiplyAll(  std::vector<T> vec,
-                    T init = 1 )
-    {
-        return std::accumulate(std::begin(vec), std::end(vec), init, std::multiplies<>());
-    }
-
-
-    /**
-     * Given a std::vector<std::string>, returns a std::vector<int>, where all std::strings in the original vector are converted to integers
-     * that they represent.
-     * 
-     * May throw error with std::stoi if the parameter vector contains an string that does not properly represent an integer.
-     * 
-     * Taken from:
-     * https://stackoverflow.com/a/15619863/16511184
-     * 
-     * Parameter:
-     *  std::vector<std::string> inputVec - A vector of std::strings, where each string represents an integer, which we wish to convert into a std::vector<int>.
-     * 
-     * Returns:
-     *  std::vector<int> - Our parameter vector, but all of its elements converts to the ints.
-    */
-    std::vector<int> vecOfStrings_to_vecOfInts( std::vector<std::string> inputVec)
-    {
-        std::vector<int> outputVec = {};
-
-        std::transform(inputVec.begin(), inputVec.end(), std::back_inserter(outputVec),
-                [](const std::string& str) { return std::stoi(str); });
-
-        return outputVec;
-    }
-
-    
-    std::vector<long long int> vecOfStrings_to_vecOfLongLongInts( std::vector<std::string> inputVec)
-    {
-        std::vector<long long int> outputVec = {};
-
-        std::transform(inputVec.begin(), inputVec.end(), std::back_inserter(outputVec),
-                [](const std::string& str) { return std::stoll(str); });
-
-        return outputVec;
-    }
-
-
-    /**
-     * @brief Returns the first index at which the element occurs in a given vector. If it is not found
-     *        in this vector, return std::numeric_limits<size_t>::max().
-     * 
-     * @credit  https://stackoverflow.com/a/1425683
-     *          https://thispointer.com/c-how-to-find-an-element-in-vector-and-get-its-index/
-     * 
-     * @param vec The vector we are trying to find the index of an element within it.
-     * @param element The element we are trying to find the index of in vec.
+     * @brief Sum all elements in a vector.
+     *
+     * @param vec A vector of elements that can be added together.
+     * @param init The initial value for the sum.
+     * @return The sum of all vector elements plus init.
      */
-    template<typename T> 
-    std::size_t findElementIndex(   const std::vector<T> & vec,
-                                    const T element )
+    template<typename T>
+    T sumAll(const std::vector<T>& vec, T init = T{})
+    {
+        return std::accumulate(vec.begin(), vec.end(), init);
+    }
+
+
+    /**
+     * @brief Multiply all elements in a vector.
+     *
+     * @param vec A vector of elements that can be multiplied together.
+     * @param init The initial value for the product. Default is 1.
+     * @return The product of all vector elements.
+     */
+    template<typename T>
+    T multiplyAll(const std::vector<T>& vec, T init = T{1})
+    {
+        return std::accumulate(vec.begin(), vec.end(), init, std::multiplies<T>());
+    }
+
+
+    /**
+     * @brief Convert a vector of string-like objects to a vector of the target type.
+     *
+     * @tparam TargetType The numeric type to convert to.
+     * @tparam StringType The string-like type (e.g., std::string).
+     * @tparam Converter The conversion function type.
+     * @param inputVec A vector of strings representing numbers.
+     * @param converter A function to convert strings to the target type.
+     * @return A vector of converted values.
+     * @throws std::invalid_argument if conversion fails.
+     */
+    template<typename TargetType, typename StringType, typename Converter>
+    std::vector<TargetType> convertStringVector(const std::vector<StringType>& inputVec, Converter converter)
+    {
+        std::vector<TargetType> outputVec;
+        outputVec.reserve(inputVec.size());
+        std::transform(inputVec.begin(), inputVec.end(), std::back_inserter(outputVec), converter);
+        return outputVec;
+    }
+
+
+    /**
+     * @brief Convert a vector of strings to a vector of integers.
+     *
+     * @param inputVec A vector of strings, where each represents an integer.
+     * @return A vector of integers.
+     * @throws std::invalid_argument if any string cannot be converted.
+     */
+    inline std::vector<int> vecOfStrings_to_vecOfInts(const std::vector<std::string>& inputVec)
+    {
+        return convertStringVector<int>(inputVec, [](const std::string& str) { return std::stoi(str); });
+    }
+
+
+    /**
+     * @brief Convert a vector of strings to a vector of long long integers.
+     *
+     * @param inputVec A vector of strings, where each represents a long long integer.
+     * @return A vector of long long integers.
+     * @throws std::invalid_argument if any string cannot be converted.
+     */
+    inline std::vector<long long> vecOfStrings_to_vecOfLongLongInts(const std::vector<std::string>& inputVec)
+    {
+        return convertStringVector<long long>(inputVec, [](const std::string& str) { return std::stoll(str); });
+    }
+
+
+    /**
+     * @brief Find the first index at which an element occurs in a vector.
+     *
+     * @param vec The vector to search.
+     * @param element The element to find.
+     * @return The index of the first occurrence, or std::numeric_limits<size_t>::max() if not found.
+     */
+    template<typename T>
+    size_t findElementIndex(const std::vector<T>& vec, const T& element)
     {
         auto it = std::find(vec.begin(), vec.end(), element);
-        
-        if(it != vec.end())
-        {
-            return std::distance(vec.begin(), it);
-        }
-        return std::numeric_limits<size_t>::max();
+        return (it != vec.end()) ? std::distance(vec.begin(), it) : std::numeric_limits<size_t>::max();
     }
 
 
     /**
-    * Given a vector of type T, vec, return the minimum element contained within it.
-    * 
-    * Parameter:
-    *  std::vector<T> vec - A vector with elements of type T.
-    * 
-    * Returns:
-    *  T - The minimum element of vec
-    */
-    template<typename T>
-    T findMin( const std::vector<T> vec)
-    {
-        //Throw an error if the vector is empty
-        if(vec.empty())
-        {
-            std::cerr << "stevensVectorLib Error: findMin(): Parameter must be a vector with size greater than 0" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-        return *min_element(std::begin(vec), std::end(vec));
-    }
-
-
-    /**
-     * @brief Given a vector, return a random element from it.
-     * 
-     * Credit: https://stackoverflow.com/a/44577004/16511184
-     * 
-     * @tparam T The type of element stored in the vector.
-     * @param vec The vector we wish to have a random element returned from it.
-     * @return T A random element from vec.
+     * @brief Find the minimum element in a vector.
+     *
+     * @param vec A non-empty vector.
+     * @return The minimum element.
+     * @throws std::invalid_argument if vec is empty.
      */
     template<typename T>
-    T getRandomElement( const std::vector<T> & vec  )
+    T findMin(const std::vector<T>& vec)
     {
-        //If there are no elements, throw an error
-        if(vec.size() == 0)
+        if (vec.empty())
         {
-            throw std::invalid_argument("stevensVectorLib::getRandomElement() cannot get a random element from an empty vector");
+            throw std::invalid_argument("stevensVectorLib::findMin() error: vector must not be empty");
         }
-
-        int randomPos = std::rand() % vec.size();  // Modulo to restrict the number of random values to be at most vec.size()-1
-        return vec[randomPos];
+        return *std::min_element(vec.begin(), vec.end());
     }
 
 
     /**
-     * @brief Given two vectors, vec_a and vec_b, combine them into a single vector where order is preserved such
-     *        that vec_b's first element appears right after vec_a's final element in the resulting vector.
-     * 
-     * Credit to Stepan Yakovenko https://stackoverflow.com/a/33649647/16511184
-     * 
-     * @tparam T The element type contained within the vectors we are concatenating.
-     * @param vec_a The vector that vec_b will be concatenated onto the end of.
-     * @param vec_b The vector that will be concatenated onto the end of vec_a.
-     * 
-     * @return A vector containing all of then elements of vec_a and all of the elements of vec_b in that order.
+     * @brief Get a random element from a vector.
+     *
+     * @param vec A non-empty vector.
+     * @return A random element from vec.
+     * @throws std::invalid_argument if vec is empty.
      */
     template<typename T>
-    std::vector<T> concat(  const std::vector<T> & vec_a,
-                            const std::vector<T> & vec_b    )
+    T getRandomElement(const std::vector<T>& vec)
     {
-        std::vector<T> vec_ab;
-        std::copy(vec_a.begin(), vec_a.end(), std::back_inserter(vec_ab));
-        std::copy(vec_b.begin(), vec_b.end(), std::back_inserter(vec_ab));
-        return vec_ab;
-    }
-
-
-    /**
-     * @brief Given two vectors, vec_a and vec_b, return a vector containing all of the elements they don't hold in common.
-     * 
-     * @tparam T The element type contained within the vec_a and vec_b
-     * @param vec_a A vector we want to include the elements of i nthe returned vector that are not included in vec_b
-     * @param vec_b A vector we want to include the elements of in the returned vector that are not included in vec_a
-     * 
-     * @return A vector containing all of the elements in vec_a and vec_b that they don't have in common.
-     */
-    template<typename T>
-    std::vector<T> getUncommonElements(     std::vector<T> & vec_a,
-                                            std::vector<T> & vec_b    )
-    {
-        std::vector<T> vec_c; //The vector that we'll be returning which contains the uncommon elements of vec_a and vec_b
-
-        //Put the elements into vec_c that are in vec_a, but not vec_b
-        for(int i = 0; i < vec_a.size(); i++)
+        if (vec.empty())
         {
-            //Search vec_b to see if it does not contain the element in vec_a
-            if(!vec_b.find(vec_a[i]))
+            throw std::invalid_argument("stevensVectorLib::getRandomElement() error: vector must not be empty");
+        }
+        size_t randomIndex = std::rand() % vec.size();
+        return vec[randomIndex];
+    }
+
+
+    /**
+     * @brief Concatenate two vectors.
+     *
+     * @param firstVec The first vector.
+     * @param secondVec The second vector to append.
+     * @return A new vector containing all elements of firstVec followed by all elements of secondVec.
+     */
+    template<typename T>
+    std::vector<T> concat(const std::vector<T>& firstVec, const std::vector<T>& secondVec)
+    {
+        std::vector<T> result;
+        result.reserve(firstVec.size() + secondVec.size());
+        result.insert(result.end(), firstVec.begin(), firstVec.end());
+        result.insert(result.end(), secondVec.begin(), secondVec.end());
+        return result;
+    }
+
+
+    /**
+     * @brief Get elements that are not common between two vectors.
+     *
+     * @param firstVec First vector.
+     * @param secondVec Second vector.
+     * @return A vector containing elements in firstVec not in secondVec, and elements in secondVec not in firstVec.
+     */
+    template<typename T>
+    std::vector<T> getUncommonElements(const std::vector<T>& firstVec, const std::vector<T>& secondVec)
+    {
+        std::vector<T> result;
+        result.reserve(firstVec.size() + secondVec.size());
+
+        for (const auto& element : firstVec)
+        {
+            if (!contains(secondVec, element))
             {
-                //If vec_b does not contain the element in vec_a, push it back into vec_c
-                vec_c.push_back(vec_a[i]);
-            }
-        }
-        //Put the elements into vec_c that are in vec_b, but not vec_a
-        for(int i = 0; i < vec_b.size(); i++)
-        {
-            //Search vec_a to see if it does not contain the element in vec_b
-            if(!vec_a.find(vec_b[i]))
-            {
-                //If vec_a does not contain the element in vec_b, push it back into vec_c
-                vec_c.push_back(vec_b[i]);
+                result.push_back(element);
             }
         }
 
-        return vec_c;
+        for (const auto& element : secondVec)
+        {
+            if (!contains(firstVec, element))
+            {
+                result.push_back(element);
+            }
+        }
+
+        return result;
     }
 
 
     /**
-     * @brief Given a 2D vector containing elements of type T named vecOfVecs, return the vector from vecOfVecs
-     *        that is the greatest in size. If there is a tie for the vector with greatest size, we will always
-     *        return the vector that we saw the earliest in the search process.
-     * 
-     * @tparam T 
-     * @param vecOfVecs The 2D vector we are searching to find and return the largest vector within it.
-     * @param searchFrom A string describing from which side of the vector we will begin searching from. 
-     *                   Valid values are "beginning" and "end"
-     * @return The vector from vecOfVecs that is the greatest in size
+     * @brief Helper function to find the maximum element based on a size function.
+     *
+     * @tparam T The element type.
+     * @tparam SizeFunc A callable that returns the size of an element.
+     * @param vec The vector to search.
+     * @param sizeFunc A function that returns the size of an element.
+     * @param searchFromBeginning If true, search from beginning; otherwise from end.
+     * @return The element with maximum size.
+     * @throws std::invalid_argument if vec is empty.
      */
-    template<typename T> 
-    std::vector<T> getLargestVectorElement( const std::vector< std::vector<T> > & vecOfVecs,
-                                            const std::string & searchFrom = "beginning" )
+    template<typename T, typename SizeFunc>
+    T findLargestElement(const std::vector<T>& vec, SizeFunc sizeFunc, bool searchFromBeginning = true)
     {
-        //If the vecOfVecs is empty, we throw an error
-        if(vecOfVecs.empty())
+        if (vec.empty())
         {
-            throw std::invalid_argument("stevensVectorLib::getLargestVectorElement() error: Given vecOfVecs parameter is empty");
+            throw std::invalid_argument("stevensVectorLib::findLargestElement() error: vector must not be empty");
         }
 
-        //Iterate through vecOfVecs, keeping track of the index of the vector that has the greatest size
-        unsigned long long int indexOfGreatestSizeVector = 0;
-        if(searchFrom == "beginning")
+        size_t maxIndex = searchFromBeginning ? 0 : vec.size() - 1;
+        size_t maxSize = sizeFunc(vec[maxIndex]);
+
+        if (searchFromBeginning)
         {
-            for(unsigned long long int i = 0; i < vecOfVecs.size(); i++)
+            for (size_t i = 1; i < vec.size(); ++i)
             {
-                if(vecOfVecs[i].size() > vecOfVecs[indexOfGreatestSizeVector].size())
+                size_t currentSize = sizeFunc(vec[i]);
+                if (currentSize > maxSize)
                 {
-                    indexOfGreatestSizeVector = i;
+                    maxSize = currentSize;
+                    maxIndex = i;
                 }
             }
         }
         else
         {
-            for(unsigned long long int i = (vecOfVecs.size() - 1); i >= 0; i--)
+            for (size_t i = vec.size() - 1; i-- > 0; )
             {
-                if(vecOfVecs[i].size() > vecOfVecs[indexOfGreatestSizeVector].size())
+                size_t currentSize = sizeFunc(vec[i]);
+                if (currentSize > maxSize)
                 {
-                    indexOfGreatestSizeVector = i;
+                    maxSize = currentSize;
+                    maxIndex = i;
                 }
             }
         }
 
-        return vecOfVecs[indexOfGreatestSizeVector];
+        return vec[maxIndex];
     }
 
 
     /**
-     * @brief Given a vector of stringlike objects, search the vector for the longest string element
-     *        and return it. If there is a tie for the longest string element, we always return 
-     *        the string we saw earlier in the search process.
-     * 
-     * @tparam T the stringlike element type that vec contains
-     * @param vec The vector that we are searching for the longest stringlike element
-     * @param searchFrom A string describing from which side of the vector we will begin searching from. 
-     *                   Valid values are "beginning" and "end"
-     * @return The string of greatest length from vec
+     * @brief Find the vector with the greatest size from a 2D vector.
+     *
+     * @param vecOfVecs A 2D vector to search.
+     * @param searchFrom "beginning" to search from start, "end" to search from end.
+     * @return The vector with the greatest size.
+     * @throws std::invalid_argument if vecOfVecs is empty.
      */
     template<typename T>
-    T getLongestStringElement(  const std::vector<T> & vec,
-                                const std::string & searchFrom = "beginning"    )
+    std::vector<T> getLargestVectorElement(const std::vector<std::vector<T>>& vecOfVecs,
+                                           const std::string& searchFrom = "beginning")
     {
-        //If vec is empty, we throw an error
-        if(vec.empty())
-        {
-            throw std::invalid_argument("stevensVectorLib::getLongestStringElement() error: Given vec parameter is empty");
-        }
-
-        //Iterate through vec, keeping track of the index of the string that has the greatest length
-        size_t indexOfLongestString = 0;
-        if(searchFrom == "beginning")
-        {
-            for(size_t i = 0; i < vec.size(); i++)
-            {
-                if(vec[i].length() > vec[indexOfLongestString].length())
-                {
-                    indexOfLongestString = i;
-                }
-            }
-        }
-        else
-        {
-            for(size_t i = (vec.size() - 1); i >= 0; i--)
-            {
-                if(vec[i].length() > vec[indexOfLongestString].length())
-                {
-                    indexOfLongestString = i;
-                }
-            }
-        }
-
-        return vec[indexOfLongestString];
+        return findLargestElement(vecOfVecs,
+                                  [](const std::vector<T>& v) { return v.size(); },
+                                  searchFrom == "beginning");
     }
 
 
     /**
-     * @brief Given a two-dimensional vector, reorient the grouping of elements in the vector such
-     *        that the resulting vector contains vectors of elements that all share the same index 
-     *        in their original vector.
-     * 
-     *        Example:
-     *        inputTable = {    {"Name", "Age", "Power"},
-     *                          {"Kelsier", "34", "Mistborn"},
-     *                          {"Marsh", "36", "Seeker"},
-     *                          {"Vin", "19", "Mistborn"}   };
-     * 
-     *        outputTable = reorient2DVector(inputTable);
-     *         
-     *        outputTable == {  {"Name", "Kelsier", "Marsh", "Vin"},
-     *                          {"Age", "34", "36", "19"},
-     *                          {"Power", "Mistborn", "Seeker", "Mistborn"}  }
-     * 
-     * @tparam T The type of elements that the 2D vector is storing
-     * @param inputVecOfVecs A 2D vector that we wish to reorient the grouping of its elements.
-     * @return The inputVecOfVecs parameter by regrouped as described by the example above..
+     * @brief Find the longest string element in a vector.
+     *
+     * @param vec A vector of string-like objects.
+     * @param searchFrom "beginning" to search from start, "end" to search from end.
+     * @return The string with the greatest length.
+     * @throws std::invalid_argument if vec is empty.
      */
     template<typename T>
-    std::vector< std::vector<T> > reorient2DVector( const std::vector< std::vector<T> > & inputVecOfVecs )
+    T getLongestStringElement(const std::vector<T>& vec, const std::string& searchFrom = "beginning")
     {
-        std::vector< std::vector<T> > outputVecOfVecs;
+        return findLargestElement(vec,
+                                  [](const T& s) { return s.length(); },
+                                  searchFrom == "beginning");
+    }
 
-        //Get the vector of greatest size from the inputVecOfVecs and use its size to determine the number of vectors the outputVecOfVecs should contain
-        unsigned long long int outputVecOfVecsSize = stevensVectorLib::getLargestVectorElement(inputVecOfVecs).size();
-        outputVecOfVecs.resize(outputVecOfVecsSize);
 
-        //Iterate through the inputVecOfVecs, pushing elements the outputVecOfVecs in the correct places
-        for(int row = 0; row < inputVecOfVecs.size(); row++)
+    /**
+     * @brief Reorient a 2D vector by transposing rows and columns.
+     *
+     * Example:
+     *   input  = {{"Name", "Age"}, {"Alice", "30"}, {"Bob", "25"}}
+     *   output = {{"Name", "Alice", "Bob"}, {"Age", "30", "25"}}
+     *
+     * @param inputVecOfVecs A 2D vector to reorient.
+     * @return The transposed 2D vector.
+     */
+    template<typename T>
+    std::vector<std::vector<T>> reorient2DVector(const std::vector<std::vector<T>>& inputVecOfVecs)
+    {
+        if (inputVecOfVecs.empty())
         {
-            for(int col = 0; col < inputVecOfVecs[row].size(); col++)
+            return {};
+        }
+
+        size_t maxCols = getLargestVectorElement(inputVecOfVecs).size();
+        std::vector<std::vector<T>> outputVecOfVecs(maxCols);
+
+        for (const auto& row : inputVecOfVecs)
+        {
+            for (size_t col = 0; col < row.size(); ++col)
             {
-                outputVecOfVecs[col].push_back(inputVecOfVecs[row][col]);
+                outputVecOfVecs[col].push_back(row[col]);
             }
         }
 
@@ -393,96 +337,82 @@ namespace stevensVectorLib
 
 
     /**
-     * @brief Given a vector of elements of type T, erase any instances of duplicate elements that exist such that
-     *        any duplicate elements that occur in the vector after the first instance will be erased. The order of the
-     *        vector elements will be maintained.
-     * 
-     *        Example: vec = {1,2,1,3,4,4,5,1};
-     *                 removeDuplicateElements(vec);
-     *                 //vec == {1,2,3,4,5}
-     * 
-     * @param vec The vector that will have duplicate elements erased from it.
-     * 
-     * @return The modified input parameter vec with all of its duplicated elements erased.
+     * @brief Remove duplicate elements from a vector, preserving order.
+     *
+     * Example: {1, 2, 1, 3, 4, 4, 5, 1} becomes {1, 2, 3, 4, 5}
+     *
+     * @param vec The vector to process.
+     * @return A new vector with duplicates removed.
      */
     template<typename T>
-    std::vector<T> eraseDuplicateElements( std::vector<T> vec  )
+    std::vector<T> eraseDuplicateElements(const std::vector<T>& vec)
     {
-        //Create a vector that will have the elements of vec in order with no duplicates
-        std::vector<T> returnVec;
-        for(int i = 0; i < vec.size(); i++)
+        std::unordered_set<T> seen;
+        std::vector<T> result;
+        result.reserve(vec.size());
+
+        for (const auto& element : vec)
         {
-            //Only push back elements from vec that aren't already in returnVec
-            if(!stevensVectorLib::contains(returnVec, vec[i]))
+            if (seen.insert(element).second)
             {
-                returnVec.push_back(vec[i]);
+                result.push_back(element);
             }
         }
-        return returnVec;
+
+        return result;
     }
 
 
     /**
-     * @brief Given two vectors vec_a and vec_b, return a vector that is a modified vec_a with all of the elements held in common with
-     *        vec_b having been erased from it.
-     * 
-     *        Example: vec_a = {1,1,2,3,4,5};
-     *                 vec_b = {1,3,5};
-     *                 result_vec = stevensVectorLib::difference(vec_a,vec_b);
-     *                 //result_vec == {1,2,4}
-     * 
-     * @param vec_a The vector we are erasing elements from.
-     * @param vec_b The vector containing the elements and their quantities we are erasing from vec_a.
-     * 
-     * @return vec_a but with all of the elements in vec_b erased from it.
+     * @brief Compute the difference between two vectors.
+     *
+     * Removes elements from firstVec that appear in secondVec (one occurrence per match).
+     *
+     * Example: firstVec = {1, 1, 2, 3, 4, 5}, secondVec = {1, 3, 5}
+     *          result = {1, 2, 4}
+     *
+     * @param firstVec The vector to subtract from.
+     * @param secondVec The vector containing elements to remove.
+     * @return A new vector with the difference.
      */
     template<typename T>
-    std::vector<T> difference(  std::vector<T> vec_a,
-                                const std::vector<T> & vec_b )
+    std::vector<T> difference(const std::vector<T>& firstVec, const std::vector<T>& secondVec)
     {
-        //For each element in vec_b, find it and erase it from vec_a
-        for(int i = 0; i < vec_b.size(); i++)
+        std::vector<T> result = firstVec;
+
+        for (const auto& element : secondVec)
         {
-            //Find the position of the element to erase
-            auto it = std::find(vec_a.begin(), vec_a.end(), vec_b[i]); 
-            //If the element was found
-            if(it != vec_a.end())
+            auto it = std::find(result.begin(), result.end(), element);
+            if (it != result.end())
             {
-                //Erase the element
-                vec_a.erase(it);
+                result.erase(it);
             }
         }
-        return vec_a;
+
+        return result;
     }
 
 
     /**
-     * @brief Given a vector, return the first element in the vector and erase it from the vector.
-     * 
-     * @param vec The vector which we want to pop the first element from.
-     * 
-     * @return The first element of vec, which we have just popped from it.
+     * @brief Remove and return the first element of a vector.
+     *
+     * @param vec The vector to pop from (modified in place).
+     * @return The first element of vec.
+     * @throws std::invalid_argument if vec is empty.
      */
     template<typename T>
-    T popFront(  std::vector<T> & vec )
+    T popFront(std::vector<T>& vec)
     {
-        //If the vector is empty, throw an error
-        if(vec.empty())
+        if (vec.empty())
         {
-            throw std::invalid_argument("stevensVectorLib::popFront() error: Given vec parameter is empty");
+            throw std::invalid_argument("stevensVectorLib::popFront() error: vector must not be empty");
         }
 
-        //Get the first element
-        T firstElement = vec[0];
-        //Erase the first element
+        T firstElement = std::move(vec.front());
         vec.erase(vec.begin());
         return firstElement;
     }
 
+} // namespace stevensVectorLib
 
-    // /**
-    //  * @brief Given a vector 
-    //  */
-    // <template
-    // std::vector< std::pair<F,S> >
-}
+#endif // STEVENS_VECTOR_LIB_HPP
