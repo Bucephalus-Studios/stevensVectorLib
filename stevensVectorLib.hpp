@@ -1,5 +1,4 @@
-#ifndef STEVENS_VECTOR_LIB_HPP
-#define STEVENS_VECTOR_LIB_HPP
+#pragma once
 
 #include <algorithm>
 #include <numeric>
@@ -9,9 +8,36 @@
 #include <limits>
 #include <unordered_set>
 #include <cstdlib>
+#include <random>
+#include <chrono>
 
 namespace stevensVectorLib
 {
+    /**
+     * @brief Internal random number generator for stevensVectorLib
+     *
+     * Uses modern C++ random engine (Mersenne Twister) with thread-local storage.
+     * This keeps the library header-only and portable.
+     */
+    namespace detail
+    {
+        inline std::mt19937& getRandomEngine()
+        {
+            thread_local std::mt19937 engine(
+                static_cast<unsigned int>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch().count()
+                )
+            );
+            return engine;
+        }
+
+        inline size_t randomIndex(size_t max)
+        {
+            if (max == 0) return 0;
+            std::uniform_int_distribution<size_t> distribution(0, max - 1);
+            return distribution(getRandomEngine());
+        }
+    }
     /**
      * @brief Check if a vector contains a specific element.
      *
@@ -93,7 +119,7 @@ namespace stevensVectorLib
      *
      * @param inputVec A vector of strings, where each represents an integer.
      * @return A vector of integers.
-     * @throws std::invalid_argument if any string cannot be converted.
+     * @throws std::invalid_argument if any std::string cannot be converted.
      */
     inline std::vector<int> vecOfStrings_to_vecOfInts(const std::vector<std::string>& inputVec)
     {
@@ -106,7 +132,7 @@ namespace stevensVectorLib
      *
      * @param inputVec A vector of strings, where each represents a long long integer.
      * @return A vector of long long integers.
-     * @throws std::invalid_argument if any string cannot be converted.
+     * @throws std::invalid_argument if any std::string cannot be converted.
      */
     inline std::vector<long long> vecOfStrings_to_vecOfLongLongInts(const std::vector<std::string>& inputVec)
     {
@@ -161,8 +187,8 @@ namespace stevensVectorLib
         {
             throw std::invalid_argument("stevensVectorLib::getRandomElement() error: vector must not be empty");
         }
-        size_t randomIndex = std::rand() % vec.size();
-        return vec[randomIndex];
+        size_t randomIdx = detail::randomIndex(vec.size());
+        return vec[randomIdx];
     }
 
 
@@ -287,11 +313,11 @@ namespace stevensVectorLib
 
 
     /**
-     * @brief Find the longest string element in a vector.
+     * @brief Find the longest std::string element in a vector.
      *
      * @param vec A vector of string-like objects.
      * @param searchFrom "beginning" to search from start, "end" to search from end.
-     * @return The string with the greatest length.
+     * @return The std::string with the greatest length.
      * @throws std::invalid_argument if vec is empty.
      */
     template<typename T>
@@ -415,4 +441,3 @@ namespace stevensVectorLib
 
 } // namespace stevensVectorLib
 
-#endif // STEVENS_VECTOR_LIB_HPP
