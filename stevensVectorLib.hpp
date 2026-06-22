@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stevensMathLib.h>
+
 #include <algorithm>
 #include <numeric>
 #include <stdexcept>
@@ -21,21 +23,11 @@ namespace stevensVectorLib
      */
     namespace detail
     {
-        inline std::mt19937& getRandomEngine()
-        {
-            thread_local std::mt19937 engine(
-                static_cast<unsigned int>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch().count()
-                )
-            );
-            return engine;
-        }
-
         inline size_t randomIndex(size_t max)
         {
             if (max == 0) return 0;
             std::uniform_int_distribution<size_t> distribution(0, max - 1);
-            return distribution(getRandomEngine());
+            return distribution(stevensMathLib::getRandomEngine());
         }
     }
     /**
