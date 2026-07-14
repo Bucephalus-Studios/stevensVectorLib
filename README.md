@@ -22,7 +22,8 @@ A header-only library providing enhanced utilities for working with `std::vector
 - `concat()` - Concatenate two vectors
 - `getUncommonElements()` - Get symmetric difference of vectors
 - `getLargestVectorElement()` - Find largest vector in 2D vector
-- `getLongestStringElement()` - Find longest string in vector
+- `getStringWithMaxCharCount()` - Find string with the most characters in a vector
+- `getStringWithMaxDisplayWidth()` - Find string that occupies the most terminal columns in a vector
 - `reorient2DVector()` - Transpose a 2D vector
 - `eraseDuplicateElements()` - Remove duplicates while preserving order
 - `difference()` - Remove elements from first vector that appear in second

@@ -35,36 +35,68 @@ TEST(GetLargestVectorElementTest, HandlesSingleVector)
     EXPECT_EQ(result, std::vector<int>({1, 2, 3}));
 }
 
-TEST(GetLongestStringElementTest, FindsLongestString)
+TEST(GetStringWithMaxCharCountTest, FindsLongestString)
 {
     std::vector<std::string> vec = {"hi", "hello", "hey"};
-    auto result = stevensVectorLib::getLongestStringElement(vec);
+    auto result = stevensVectorLib::getStringWithMaxCharCount(vec);
     EXPECT_EQ(result, "hello");
 }
 
-TEST(GetLongestStringElementTest, FindsFirstOnTie)
+TEST(GetStringWithMaxCharCountTest, FindsFirstOnTie)
 {
     std::vector<std::string> vec = {"abc", "def", "ghi"};
-    auto result = stevensVectorLib::getLongestStringElement(vec);
+    auto result = stevensVectorLib::getStringWithMaxCharCount(vec);
     EXPECT_EQ(result, "abc");
 }
 
-TEST(GetLongestStringElementTest, SearchFromEnd)
+TEST(GetStringWithMaxCharCountTest, SearchFromEnd)
 {
     std::vector<std::string> vec = {"abc", "def", "ghi"};
-    auto result = stevensVectorLib::getLongestStringElement(vec, "end");
+    auto result = stevensVectorLib::getStringWithMaxCharCount(vec, "end");
     EXPECT_EQ(result, "ghi");
 }
 
-TEST(GetLongestStringElementTest, ThrowsOnEmpty)
+TEST(GetStringWithMaxCharCountTest, ThrowsOnEmpty)
 {
     std::vector<std::string> vec;
-    EXPECT_THROW(stevensVectorLib::getLongestStringElement(vec), std::invalid_argument);
+    EXPECT_THROW(stevensVectorLib::getStringWithMaxCharCount(vec), std::invalid_argument);
 }
 
-TEST(GetLongestStringElementTest, HandlesSingleElement)
+TEST(GetStringWithMaxCharCountTest, HandlesSingleElement)
 {
     std::vector<std::string> vec = {"test"};
-    auto result = stevensVectorLib::getLongestStringElement(vec);
+    auto result = stevensVectorLib::getStringWithMaxCharCount(vec);
     EXPECT_EQ(result, "test");
+}
+
+TEST(GetStringWithMaxCharCountTest, ComparesByCharacterNotByte)
+{
+    // "мир" is 3 codepoints but 6 bytes; "hello" is 5 codepoints but only 5 bytes. A byte-length
+    // comparison would (wrongly) pick "мир" as longest (6 > 5 bytes); character count correctly
+    // picks "hello" (5 > 3 characters).
+    std::vector<std::string> vec = {"мир", "hello"};
+    auto result = stevensVectorLib::getStringWithMaxCharCount(vec);
+    EXPECT_EQ(result, "hello");
+}
+
+TEST(GetStringWithMaxDisplayWidthTest, FindsWidestAsciiString)
+{
+    std::vector<std::string> vec = {"hi", "hello", "hey"};
+    auto result = stevensVectorLib::getStringWithMaxDisplayWidth(vec);
+    EXPECT_EQ(result, "hello");
+}
+
+TEST(GetStringWithMaxDisplayWidthTest, CjkOutweighsLongerCharCountAsciiString)
+{
+    // "世界" is 2 codepoints but double-width (4 terminal columns). "hi" is 2 codepoints,
+    // single-width (2 columns). Char count ties them; display width correctly picks "世界".
+    std::vector<std::string> vec = {"hi", "世界"};
+    auto result = stevensVectorLib::getStringWithMaxDisplayWidth(vec);
+    EXPECT_EQ(result, "世界");
+}
+
+TEST(GetStringWithMaxDisplayWidthTest, ThrowsOnEmpty)
+{
+    std::vector<std::string> vec;
+    EXPECT_THROW(stevensVectorLib::getStringWithMaxDisplayWidth(vec), std::invalid_argument);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stevensMathLib.h>
+#include <stevensStringLib.h>
 
 #include <algorithm>
 #include <numeric>
@@ -305,18 +306,48 @@ namespace stevensVectorLib
 
 
     /**
-     * @brief Find the longest std::string element in a vector.
+     * @brief Find the std::string element with the greatest Unicode character (codepoint) count.
      *
-     * @param vec A vector of string-like objects.
+     * Compares by stevensStringLib::charCount(), not byte count - a multi-byte character (Cyrillic,
+     * CJK, etc.) counts as 1 character, not 2-4 bytes. Note this is character count, not display
+     * width: a CJK string can have fewer characters than a Latin one while occupying more terminal
+     * columns when rendered (CJK characters are double-width) - use getStringWithMaxDisplayWidth()
+     * instead if you need "which one takes up more screen space" rather than "which one has more
+     * characters."
+     *
+     * @param vec A vector of UTF-8 encoded string-like objects.
      * @param searchFrom "beginning" to search from start, "end" to search from end.
-     * @return The std::string with the greatest length.
+     * @return The std::string with the greatest character count.
      * @throws std::invalid_argument if vec is empty.
      */
     template<typename T>
-    T getLongestStringElement(const std::vector<T>& vec, const std::string& searchFrom = "beginning")
+    T getStringWithMaxCharCount(const std::vector<T>& vec, const std::string& searchFrom = "beginning")
     {
         return findLargestElement(vec,
-                                  [](const T& s) { return s.length(); },
+                                  [](const T& s) { return stevensStringLib::charCount(s); },
+                                  searchFrom == "beginning");
+    }
+
+
+    /**
+     * @brief Find the std::string element that occupies the most terminal columns when displayed.
+     *
+     * Compares by stevensStringLib::lineDisplayWidth() - display width, not character count. CJK/fullwidth
+     * characters render 2 columns wide, so a short CJK string can outweigh a longer single-column
+     * (e.g. Latin/Cyrillic) one here even though it has fewer characters. This is the one to use for
+     * layout purposes (e.g. sizing a column so nothing gets clipped) - see
+     * getStringWithMaxCharCount() instead if you actually want "which one has more characters."
+     *
+     * @param vec A vector of UTF-8 encoded, single-line string-like objects.
+     * @param searchFrom "beginning" to search from start, "end" to search from end.
+     * @return The std::string with the greatest display width.
+     * @throws std::invalid_argument if vec is empty.
+     */
+    template<typename T>
+    T getStringWithMaxDisplayWidth(const std::vector<T>& vec, const std::string& searchFrom = "beginning")
+    {
+        return findLargestElement(vec,
+                                  [](const T& s) { return stevensStringLib::lineDisplayWidth(s); },
                                   searchFrom == "beginning");
     }
 

@@ -8,6 +8,14 @@ FetchContent_Declare(stevensMathLib
 )
 FetchContent_MakeAvailable(stevensMathLib)
 
+# For getStringWithMaxCharCount()'s codepoint-aware and getStringWithMaxDisplayWidth()'s
+# display-width-aware (neither byte-aware) length comparisons.
+FetchContent_Declare(stevensStringLib
+    GIT_REPOSITORY https://github.com/Bucephalus-Studios/stevensStringLib.git
+    GIT_TAG main
+)
+FetchContent_MakeAvailable(stevensStringLib)
+
 add_library(stevensVectorLib INTERFACE)
 add_library(stevensVectorLib::stevensVectorLib ALIAS stevensVectorLib)
 
@@ -16,7 +24,7 @@ target_include_directories(stevensVectorLib INTERFACE
     $<INSTALL_INTERFACE:include>
 )
 target_compile_features(stevensVectorLib INTERFACE cxx_std_17)
-target_link_libraries(stevensVectorLib INTERFACE stevensMathLib)
+target_link_libraries(stevensVectorLib INTERFACE stevensMathLib stevensStringLib)
 
 option(STEVENSVECTORLIB_BUILD_TESTS "Build tests" OFF)
 option(STEVENSVECTORLIB_BUILD_BENCHMARKS "Build benchmarks" OFF)
